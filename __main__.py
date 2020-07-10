@@ -4,7 +4,7 @@
 emlファイルを元に扱いやすい様にデータを取得します。
 
 Usage:
-    python -m eml2txt.py foo.eml bar.eml ...
+    python -m eml2txt foo.eml bar.eml ...
 """
 import sys
 import email
