@@ -40,6 +40,7 @@ FROM: {}
 TO: {}
 CC: {}
 -----------------------
+SUBJECT: {}
 BODY:
 {}
 -----------------------
@@ -49,6 +50,7 @@ ATTACH_FILE_NAME:
             self.from_address,
             self.to_address,
             self.cc_address,
+            self.subject,
             self.body,
             ",".join([ x["name"] for x in self.attach_file_list])
         )
