@@ -102,13 +102,8 @@ ATTACH_FILE_NAME:
                 ret += fragment
                 continue
             # encodeがなければとりあえずUTF-8でデコードする
-            if encoding:
-                try:
-                    ret += fragment.decode(encoding)
-                except UnicodeDecodeError:
-                    ret += fragment.decode(encoding, errors='ignore')
-            else:
-                ret += fragment.decode("UTF-8")
+            ret += fragment.decode(encoding if encoding else 'UTF-8',
+                                   errors='replace')
         return ret
 
     @staticmethod
@@ -130,11 +125,14 @@ ATTACH_FILE_NAME:
         """Dump messages to TEXT"""
         for filename in argv[1:]:
             parser = cls(filename)
+            invalid_str = r"[\\/:*?\"<>|]"
             # Remove invalid text
-            subject = re.sub(r"[\\/:*?\"<>|]", "", parser.subject)
-            filename = f'{subject}.txt'
+            subject = re.sub(invalid_str, "", parser.subject)
             result = parser.get_attr_data()
-            with open(filename, 'a') as _f:  # Append same subject exitst
+            with open(
+                    f'{subject}.txt',
+                    'a',  # Append same subject exitst
+                    encoding='utf-8') as _f:
                 _f.write(result)
 
 
