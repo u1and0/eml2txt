@@ -116,13 +116,13 @@ ATTACH_FILE_NAME:
         return ret
 
 if __name__ == "__main__":
-    if len(sys.argv) <2:
+    if len(sys.argv) <2:  # No args
         print(__doc__)
         sys.exit(1)
-    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':
+    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':  # Show help
         print(__doc__)
         sys.exit(0)
     else:
-        for filename in sys.argv[1:]:
+        for filename in sys.argv[1:]:  # Dump messages
             result = MailParser(filename).get_attr_data()
             print(result)
