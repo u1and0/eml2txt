@@ -11,11 +11,11 @@ import sys
 import email
 from email.header import decode_header
 
-class MailParser(object):
+
+class MailParser:
     """
     メールファイルのパスを受け取り、それを解析するクラス
     """
-
     def __init__(self, mail_file_path):
         self.mail_file_path = mail_file_path
         # emlファイルからemail.message.Messageインスタンスの取得
@@ -47,16 +47,9 @@ BODY:
 -----------------------
 ATTACH_FILE_NAME:
 {}
-""".format(
-            self.from_address,
-            self.to_address,
-            self.cc_address,
-            self.subject,
-            self.body,
-            ",".join([ x["name"] for x in self.attach_file_list])
-        )
+""".format(self.from_address, self.to_address, self.cc_address, self.subject,
+           self.body, ",".join([x["name"] for x in self.attach_file_list]))
         return result
-
 
     def _parse(self):
         """
@@ -80,13 +73,16 @@ ATTACH_FILE_NAME:
             if not attach_fname:
                 charset = part.get_content_charset()
                 if charset:
-                    self.body += part.get_payload(decode=True).decode(str(charset), errors="replace")
+                    self.body += part.get_payload(decode=True).decode(
+                        str(charset), errors="replace")
             else:
                 # ファイル名があるならそれは添付ファイルなので
                 # データを取得する
                 self.attach_file_list.append({
-                    "name": attach_fname,
-                    "data": part.get_payload(decode=True)
+                    "name":
+                    attach_fname,
+                    "data":
+                    part.get_payload(decode=True)
                 })
 
     def _get_decoded_header(self, key_name):
@@ -114,23 +110,44 @@ ATTACH_FILE_NAME:
                 ret += fragment.decode("UTF-8")
         return ret
 
-if __name__ == "__main__":
-    if len(sys.argv) <2:  # No args
+    @staticmethod
+    def help(exitcode):
+        """Show help"""
         print(__doc__)
-        sys.exit(1)
-    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':  # Show help
-        print(__doc__)
-        sys.exit(0)
-    elif '-' in sys.argv:  # Dump messages to STDOUT
-        sys.argv.remove('-')
-        for filename in sys.argv[1:]:
-            result = MailParser(filename).get_attr_data()
+        sys.exit(exitcode)
+
+    @classmethod
+    def dump2stdout(cls, argv):
+        """Dump messages to STDOUT"""
+        argv.remove('-')
+        for filename in argv[1:]:
+            result = cls(filename).get_attr_data()
             print(result)
-    else:
-        for filename in sys.argv[1:]:  # Dump messages to TEXT
-            parser = MailParser(filename)
-            subject = parser.subject.replace(':', '').replace(' ', '_') # :=>None, Space=>_
+
+    @classmethod
+    def dump2txt(cls, argv):
+        """Dump messages to TEXT"""
+        for filename in argv[1:]:
+            parser = cls(filename)
+            subject = parser.subject.replace(':', '').replace(
+                ' ', '_')  # :=>None, Space=>_
             filename = f'{subject}.txt'
             result = parser.get_attr_data()
-            with open(filename, 'a') as f:  # Append same subject exitst
-                f.write(result)
+            with open(filename, 'a') as _f:  # Append same subject exitst
+                _f.write(result)
+
+
+def main():
+    """Entry point"""
+    if len(sys.argv) < 2:  # No args
+        MailParser.help(1)
+    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':  # Show help & exit
+        MailParser.help(0)
+    elif '-' in sys.argv:
+        MailParser.dump2stdout(sys.argv)
+    else:
+        MailParser.dump2txt(sys.argv)
+
+
+if __name__ == "__main__":
+    main()
