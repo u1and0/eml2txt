@@ -8,6 +8,7 @@ Usage:
     $ python -m eml2txt *.eml -  # => Concat whole eml and dump to STDOUT
 """
 import sys
+import re
 import email
 from email.header import decode_header
 
@@ -129,8 +130,8 @@ ATTACH_FILE_NAME:
         """Dump messages to TEXT"""
         for filename in argv[1:]:
             parser = cls(filename)
-            subject = parser.subject.replace(':', '').replace(
-                ' ', '_')  # :=>None, Space=>_
+            # Remove invalid text
+            subject = re.sub(r"[\\/:*?\"<>|]", "", parser.subject)
             filename = f'{subject}.txt'
             result = parser.get_attr_data()
             with open(filename, 'a') as _f:  # Append same subject exitst
