@@ -78,11 +78,9 @@ ATTACH_FILE_NAME:
             attach_fname = part.get_filename()
             # ファイル名がない場合は本文のはず
             if not attach_fname:
-                charset = str(part.get_content_charset())
+                charset = part.get_content_charset()
                 if charset:
-                    self.body += part.get_payload(decode=True).decode(charset, errors="replace")
-                else:
-                    self.body += part.get_payload(decode=True)
+                    self.body += part.get_payload(decode=True).decode(str(charset), errors="replace")
             else:
                 # ファイル名があるならそれは添付ファイルなので
                 # データを取得する
@@ -134,5 +132,5 @@ if __name__ == "__main__":
             subject = parser.subject.replace(':', '').replace(' ', '_') # :=>None, Space=>_
             filename = f'{subject}.txt'
             result = parser.get_attr_data()
-            with open(filename, 'w+') as f:  # Append same subject exitst
+            with open(filename, 'a') as f:  # Append same subject exitst
                 f.write(result)
