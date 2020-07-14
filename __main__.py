@@ -4,7 +4,8 @@
 emlファイルを元に扱いやすい様にデータを取得します。
 
 Usage:
-    python -m eml2txt foo.eml bar.eml ...
+    $ python -m eml2txt foo.eml bar.eml ...  # => Dump to foo.txt, bar.txt
+    $ python -m eml2txt *.eml -  # => Concat whole eml and dump to STDOUT
 """
 import sys
 import email
@@ -130,8 +131,8 @@ if __name__ == "__main__":
     else:
         for filename in sys.argv[1:]:  # Dump messages to TEXT
             parser = MailParser(filename)
-            subject = parser.subject.replace(':', '').replace(' ', '')
+            subject = parser.subject.replace(':', '').replace(' ', '_') # :=>None, Space=>_
             filename = f'{subject}.txt'
             result = parser.get_attr_data()
-            with open(filename, 'w') as f:
+            with open(filename, 'w+') as f:  # Append same subject exitst
                 f.write(result)
