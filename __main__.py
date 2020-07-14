@@ -122,7 +122,16 @@ if __name__ == "__main__":
     elif sys.argv[1] == '-h' or sys.argv[1] == '--help':  # Show help
         print(__doc__)
         sys.exit(0)
-    else:
-        for filename in sys.argv[1:]:  # Dump messages
+    elif '-' in sys.argv:  # Dump messages to STDOUT
+        sys.argv.remove('-')
+        for filename in sys.argv[1:]:
             result = MailParser(filename).get_attr_data()
             print(result)
+    else:
+        for filename in sys.argv[1:]:  # Dump messages to TEXT
+            parser = MailParser(filename)
+            subject = parser.subject.replace(':', '').replace(' ', '')
+            filename = f'{subject}.txt'
+            result = parser.get_attr_data()
+            with open(filename, 'w') as f:
+                f.write(result)
