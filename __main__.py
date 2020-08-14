@@ -26,6 +26,7 @@ class MailParser:
         self.to_address = None
         self.cc_address = None
         self.from_address = None
+        self.date = None
         self.body = ""
         # 添付ファイル関連の情報
         # {name: file_name, data: data}
@@ -38,6 +39,7 @@ class MailParser:
         メールデータの取得
         """
         result = """\
+DATE: {}
 FROM: {}
 TO: {}
 CC: {}
@@ -48,8 +50,9 @@ BODY:
 -----------------------
 ATTACH_FILE_NAME:
 {}
-""".format(self.from_address, self.to_address, self.cc_address, self.subject,
-           self.body, ",".join([x["name"] for x in self.attach_file_list]))
+""".format(self.date, self.from_address, self.to_address, self.cc_address,
+           self.subject, self.body,
+           ",".join([x["name"] for x in self.attach_file_list]))
         return result
 
     def _parse(self):
@@ -61,6 +64,7 @@ ATTACH_FILE_NAME:
         self.to_address = self._get_decoded_header("To")
         self.cc_address = self._get_decoded_header("Cc")
         self.from_address = self._get_decoded_header("From")
+        self.date = self._get_decoded_header("Date")
 
         # メッセージ本文部分の処理
         for part in self.email_message.walk():
