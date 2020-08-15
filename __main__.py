@@ -12,6 +12,8 @@ import re
 import email
 from email.header import decode_header
 
+VERSION = "eml2ext v1.0.1"
+
 
 class MailParser:
     """
@@ -116,6 +118,12 @@ ATTACH_FILE_NAME:
         print(__doc__)
         sys.exit(exitcode)
 
+    @staticmethod
+    def version():
+        """Show version"""
+        print(VERSION)
+        sys.exit(0)
+
     @classmethod
     def dump2stdout(cls, argv):
         """Dump messages to STDOUT"""
@@ -144,7 +152,9 @@ def main():
     """Entry point"""
     if len(sys.argv) < 2:  # No args
         MailParser.help(1)
-    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':  # Show help & exit
+    elif sys.argv[1] == '-v' or sys.argv[1] == '--version':
+        MailParser.version()
+    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':
         MailParser.help(0)
     elif '-' in sys.argv:
         MailParser.dump2stdout(sys.argv)
