@@ -9,10 +9,11 @@ Usage:
 """
 import sys
 import re
+from dateutil.parser import parse
 import email
 from email.header import decode_header
 
-VERSION = "eml2ext v1.0.1"
+VERSION = "eml2ext v1.0.1r"
 
 
 class MailParser:
@@ -66,7 +67,7 @@ ATTACH_FILE_NAME:
         self.to_address = self._get_decoded_header("To")
         self.cc_address = self._get_decoded_header("Cc")
         self.from_address = self._get_decoded_header("From")
-        self.date = self._get_decoded_header("Date")
+        self.date = parse(self._get_decoded_header("Date")).isoformat()
 
         # メッセージ本文部分の処理
         for part in self.email_message.walk():
