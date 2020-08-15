@@ -138,13 +138,18 @@ ATTACH_FILE_NAME:
         """Dump messages to TEXT"""
         for filename in argv[1:]:
             parser = cls(filename)
-            invalid_str = r"[\\/:*?\"<>|]"
+            invalid_str = r"[\\/:*?\"<>|]"  # Not allowed to use filename
             # Remove invalid text
             subject = re.sub(invalid_str, "", parser.subject)
+            # Remove local time "+09:00", "-"
+            index_local_time = len("+09:00")
+            title_date = parser.date[:-index_local_time].replace("-", "")
+            # Remove invalid strings
+            date = re.sub(invalid_str, "", title_date)
             result = parser.get_attr_data()
             with open(
-                    f'{subject}.txt',
-                    'a',  # Append same subject exitst
+                    f'{date}_{subject}.txt',
+                    'w',  # Overwrite same date+subject eml
                     encoding='utf-8') as _f:
                 _f.write(result)
 
