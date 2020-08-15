@@ -13,7 +13,7 @@ from dateutil.parser import parse
 import email
 from email.header import decode_header
 
-VERSION = "eml2ext v1.0.1r"
+VERSION = "eml2ext v2.0.0"
 
 
 class MailParser:

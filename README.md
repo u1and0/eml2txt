@@ -7,6 +7,8 @@ $ python -m eml2txt foo.eml bar.eml ...  # => Dump to foo.txt, bar.txt
 $ python -m eml2txt *.eml -  # => Concat whole eml and dump to STDOUT
 ```
 
+Text filename renames to Date with Subject.
+
 # MIT License
 
 Copyright (c) [2020] [eml2txt]
