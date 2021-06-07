@@ -13,7 +13,7 @@ from dateutil.parser import parse
 import email
 from email.header import decode_header
 
-VERSION = "eml2ext v2.0.0"
+VERSION = "eml2ext v3.0.0"
 
 
 class MailParser:
@@ -67,7 +67,11 @@ ATTACH_FILE_NAME:
         self.to_address = self._get_decoded_header("To")
         self.cc_address = self._get_decoded_header("Cc")
         self.from_address = self._get_decoded_header("From")
-        self.date = parse(self._get_decoded_header("Date")).isoformat()
+        self.date = parse(
+            self._get_decoded_header("Date"),
+            dayfirst=True,
+            fuzzy=True,
+        ).isoformat()
 
         # メッセージ本文部分の処理
         for part in self.email_message.walk():
@@ -136,22 +140,25 @@ ATTACH_FILE_NAME:
     @classmethod
     def dump2txt(cls, argv):
         """Dump messages to TEXT"""
-        for filename in argv[1:]:
-            parser = cls(filename)
-            invalid_str = r"[\\/:*?\"<>|]"  # Not allowed to use filename
-            # Remove invalid text
-            subject = re.sub(invalid_str, "", parser.subject)
-            # Remove local time "+09:00", "-"
-            index_local_time = len("+09:00")
-            title_date = parser.date[:-index_local_time].replace("-", "")
-            # Remove invalid strings
-            date = re.sub(invalid_str, "", title_date)
-            result = parser.get_attr_data()
-            with open(
-                    f'{date}_{subject}.txt',
-                    'w',  # Overwrite same date+subject eml
-                    encoding='utf-8') as _f:
-                _f.write(result)
+        try:
+            for filename in argv[1:]:
+                parser = cls(filename)
+                invalid_str = r"[\\/:*?\"<>|]"  # Not allowed to use filename
+                # Remove invalid text
+                subject = re.sub(invalid_str, "", parser.subject)
+                # Remove local time "+09:00", "-"
+                title_date = parser.date[:-len("+09:00")].replace("-", "")
+                # Remove invalid strings
+                date = re.sub(invalid_str, "", title_date)
+                result = parser.get_attr_data()
+                # Overwrite same date+subject eml
+                with open(f'{date}_{subject}.txt', 'w',
+                          encoding='utf-8') as _f:
+                    _f.write(result)
+        except BaseException as e:
+            with open('eml2ext_error.txt', 'w', encoding='utf-8') as _f:
+                print(f'error {e}')
+                # _f.write(e)
 
 
 def main():
