@@ -156,9 +156,14 @@ ATTACH_FILE_NAME:
                           encoding='utf-8') as _f:
                     _f.write(result)
         except BaseException as e:
-            with open('eml2ext_error.txt', 'w', encoding='utf-8') as _f:
-                print(f'error {e}')
-                # _f.write(e)
+            with open('eml2ext_error.txt', 'a', encoding='utf-8') as _f:
+                print(e)
+                _f.write(str(e))
+                _f.write('\n')
+                _f.write(filename)
+                _f.write(parser.subject)
+                _f.write(parser.date)
+                _f.write(parser.get_attr_data())
 
 
 def main():
