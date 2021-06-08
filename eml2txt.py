@@ -12,8 +12,9 @@ import re
 from dateutil.parser import parse
 import email
 from email.header import decode_header
+import traceback
 
-VERSION = "eml2ext v3.0.0"
+VERSION = "eml2ext v3.0.0r"
 
 
 class MailParser:
@@ -70,7 +71,7 @@ ATTACH_FILE_NAME:
         self.date = parse(
             self._get_decoded_header("Date"),
             dayfirst=True,
-            fuzzy=True,
+            # fuzzy=True,
         ).isoformat()
 
         # メッセージ本文部分の処理
@@ -157,13 +158,19 @@ ATTACH_FILE_NAME:
                     _f.write(result)
         except BaseException as e:
             with open('eml2ext_error.txt', 'a', encoding='utf-8') as _f:
-                print(e)
-                _f.write(str(e))
-                _f.write('\n')
-                _f.write(filename)
-                _f.write(parser.subject)
-                _f.write(parser.date)
-                _f.write(parser.get_attr_data())
+                # Write error to stdout
+                print('error:', e)
+                # Write Traceback and any item to eml2ext_error.txt
+                for i in [
+                    traceback.format_exc()+'\n',
+                    '\n',
+                    filename+'\n',
+                    parser.subject+'\n',
+                    parser.date+'\n',
+                    parser.get_attr_data()+'\n',
+                ]:
+                    _f.write(i)
+                sys.exit(1)
 
 
 def main():
