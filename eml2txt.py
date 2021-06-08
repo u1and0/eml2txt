@@ -14,7 +14,7 @@ import email
 from email.header import decode_header
 import traceback
 
-VERSION = "eml2ext v3.0.0r"
+VERSION = "eml2ext v3.1.0"
 
 
 class MailParser:
@@ -71,7 +71,7 @@ ATTACH_FILE_NAME:
         self.date = parse(
             self._get_decoded_header("Date"),
             dayfirst=True,
-            # fuzzy=True,
+            fuzzy=True,
         ).isoformat()
 
         # メッセージ本文部分の処理
